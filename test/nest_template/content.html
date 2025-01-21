@@ -1,0 +1,23 @@
+
+
+{{template "header" .}}
+
+<div id="main">
+    <div class="inner">
+
+        {{range .Cards}}
+        <div class="card mb-3" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title">{{.SectionTitle}}</h5>
+            <p class="card-text">{{.SectionText}}</p>
+            <a href="#" class="btn btn-primary">{{.SectionButton}}</a>
+            </div>
+        </div>
+        {{end}}
+    </div>
+</div>
+
+
+{{template "footer" .}}
+
+

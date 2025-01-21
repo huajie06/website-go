@@ -1,0 +1,20 @@
+
+{{if .Success}}
+  <h3>Thanks for your message!</h3>
+  <a href="/notes"> Click here for all notes.</a>
+{{else}}
+    <h4>Note</h4>
+    <form method="POST">
+        <label>File Name:</label>
+        <br />
+        <input type="text" name="Fname" required>
+        <br />
+        <br />
+        <label>Content:</label>
+        <br />
+        <textarea placeholder="Add your notes..." name="Content" cols="86" rows ="20" required></textarea>
+        <br />
+        <br />
+        <input type="submit">
+    </form>
+{{end}}

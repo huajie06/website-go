@@ -1,0 +1,10 @@
+
+<div align="right">
+    <a href="/take-note">Take Note</a>
+</div>
+<ul>
+    {{range .}}
+    <li>{{.DatetimeStr}} <a href="/note/{{.NoteTimestamp}}_{{.Fname}}">{{.Fname}}</a></li>
+    {{end}}
+</ul>
+
