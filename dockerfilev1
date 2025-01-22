@@ -1,0 +1,61 @@
+# Use a multi-stage build to minimize the final image size
+# Stage 1: Build the application
+FROM arm32v7/golang:1.22 AS builder
+
+# Set the working directory inside the container
+WORKDIR /run_app
+
+# Copy the Go module files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -o /server
+
+# Stage 2: Debug image (with a shell)
+FROM alpine:latest AS debug
+
+# Copy the compiled binary from the builder stage
+COPY --from=builder /server /server
+
+# Copy static files (e.g., templates, configuration files) into the debug image
+COPY --from=builder /run_app/template /template
+COPY --from=builder /run_app/image /image
+COPY --from=builder /run_app/db /db
+
+# Install a shell and other debugging tools
+RUN apk add --no-cache busybox
+
+# Expose port 5000
+EXPOSE 5000
+
+# Set the working directory for the debug image
+WORKDIR /
+
+# Run the application (or start a shell for debugging)
+CMD ["/server"]
+
+# Stage 3: Production image (minimal)
+FROM scratch AS production
+
+# Copy the compiled binary from the builder stage
+COPY --from=builder /server /server
+
+# Copy static files (e.g., templates, configuration files) into the production image
+COPY --from=builder /run_app/template /template
+COPY --from=builder /run_app/image /image
+COPY --from=builder /run_app/db /db
+
+# Expose port 5000
+EXPOSE 5000
+
+# Set the working directory for the production image
+WORKDIR /
+
+# Run the application
+CMD ["/server"]

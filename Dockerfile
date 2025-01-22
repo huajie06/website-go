@@ -1,21 +1,37 @@
-FROM arm32v7/golang:1.20
+# Stage 1: Build stage
+FROM arm32v7/golang:1.22-alpine AS builder
 
-# RUN go get -u github.com/gorilla/mux@1.8.0
+# Set the working directory
+WORKDIR /run_app
 
-# RUN mkdir /app_test
-# ADD . /app_test/
-WORKDIR /app_test
-
-COPY . .
-
+# Copy dependency files first to leverage caching
+COPY go.mod go.sum ./
 RUN go mod download
 
+# Copy the application source code and static files
+COPY . .
+
+# Build the Go binary
 RUN go build -o /test-website
 
-# COPY go.mod go.sum ./
-# RUN go mod download
+# Stage 2: Runtime stage
+FROM arm32v7/alpine:latest
 
+# Set the working directory
+WORKDIR /run_app
+
+# Copy the compiled binary
+COPY --from=builder /test-website .
+
+# Copy static files
+COPY template/ template/
+COPY db/ db/
+COPY image/ image/
+
+COPY go.mod go.sum ./
+
+# Expose the desired port
 EXPOSE 5000
 
-CMD ["/test-website"]
-
+# Set the entry point
+CMD ["/run_app/test-website"]
