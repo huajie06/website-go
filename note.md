@@ -1,4 +1,16 @@
 
+### end up using this 
+
+```bash
+docker build -t test-website .
+docker run -it --entrypoint /bin/sh test-website
+docker run -p 5000:5000 test-website
+
+
+docker run -d -p 5000:5000 --restart unless-stopped --name my-website test-website
+```
+
+
 ### steps
 
 1. run the cmd to build image, here *pi* should be my image name but was a mistake.
@@ -6,9 +18,6 @@
 ```bash
 
 # debug with this 
-docker build -t test-website .
-docker run -it --entrypoint /bin/sh test-website
-docker run -p 5000:5000 test-website
 
 docker build --target debug -t pi/raspberry-go-app:debug .
 
